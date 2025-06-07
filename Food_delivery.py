@@ -478,11 +478,9 @@ class FoodDeliveryApp(QMainWindow):
         restaurant_section.setObjectName("section")
         
         self.restaurant_list = QListWidget()
-        self.restaurant_list.setViewMode(QListWidget.ViewMode.IconMode)
-        self.restaurant_list.setIconSize(QSize(150, 150))
-        self.restaurant_list.setResizeMode(QListWidget.ResizeMode.Adjust)
-        self.restaurant_list.setMovement(QListWidget.Movement.Static)
-        self.restaurant_list.setSpacing(20)
+        self.restaurant_list.setViewMode(QListWidget.ViewMode.ListMode)
+        self.restaurant_list.setSpacing(15)
+        self.restaurant_list.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.restaurant_list.itemClicked.connect(self.show_restaurant)
         
         layout.addWidget(self.search_results_label)
@@ -967,28 +965,36 @@ class FoodDeliveryApp(QMainWindow):
         for restaurant in sorted_restaurants:
             widget = QWidget()
             layout = QHBoxLayout()
+            layout.setContentsMargins(10, 10, 10, 10)
             
             icon_label = QLabel()
-            pixmap = QPixmap("restaurant_icon.png").scaled(100, 100, Qt.AspectRatioMode.KeepAspectRatio)
+            pixmap = QPixmap("restaurant_icon.png").scaled(80, 80, Qt.AspectRatioMode.KeepAspectRatio)
             icon_label.setPixmap(pixmap)
+            icon_label.setFixedSize(80, 80)
             
             info_layout = QVBoxLayout()
             name_label = QLabel(restaurant['name'])
             name_label.setStyleSheet("font-weight: bold; font-size: 14pt;")
+            
             desc_label = QLabel(restaurant['description'])
+            desc_label.setWordWrap(True)
+            desc_label.setStyleSheet("color: #555;")
+            
             rating_label = QLabel(f"★ {restaurant.get('rating', 4.5)}")
             rating_label.setStyleSheet("color: #FF9800; font-weight: bold;")
             
             info_layout.addWidget(name_label)
             info_layout.addWidget(desc_label)
             info_layout.addWidget(rating_label)
+            info_layout.addStretch()
             
             layout.addWidget(icon_label)
             layout.addLayout(info_layout)
             widget.setLayout(layout)
             
+            # Create list item
             list_item = QListWidgetItem()
-            list_item.setSizeHint(widget.sizeHint())
+            list_item.setSizeHint(QSize(100, 120))
             list_item.setData(Qt.ItemDataRole.UserRole, {'type': 'restaurant', 'id': restaurant['id']})
             
             self.restaurant_list.addItem(list_item)
